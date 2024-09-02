@@ -1,5 +1,5 @@
 {
-  "name": "app_name",
+  "name": "insta wizard",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -25,6 +25,7 @@
     "form-data": "^4.0.0",
     "fs": "^0.0.1-security",
     "i": "^0.3.7",
+    "instagram-private-api": "^1.46.1",
     "lottie-react": "^2.4.0",
     "mongodb": "^6.7.0",
     "mongoose": "^8.4.1",
@@ -33,6 +34,7 @@
     "openai": "^4.47.1",
     "react": "^18",
     "react-dom": "^18",
+    "request-promise": "^4.2.6",
     "stripe": "^15.7.0",
     "uploadthing": "^6.12.0"
   },

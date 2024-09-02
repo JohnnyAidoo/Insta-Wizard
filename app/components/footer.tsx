@@ -35,7 +35,7 @@ export function Footer() {
         </Typography>
         <a href="/sign-up">
           <Button
-            className="from-deep-orange-700 to-yellow-900"
+            className="from-tertiary to-tertiary2"
             variant="gradient"
             placeholder={undefined}
             onPointerEnterCapture={undefined}
@@ -53,7 +53,7 @@ export function Footer() {
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
         >
-          Docu-Chat {currentYear}
+          Insta Wizard {currentYear}
         </Typography>
         <div className="flex gap-5">
           {links.map((link) => (

@@ -27,7 +27,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "app/api/ai/route.ts",
-    "app/components/pdfViewer.js"
+    "app/components/pdfViewer.js",
+    "app/api/uploadToIG/route.ts"
   ],
   "exclude": ["node_modules"]
 }

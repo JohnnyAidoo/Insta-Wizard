@@ -15,6 +15,7 @@ module.exports = withMT(
           primary2: "rgba(var(--primary2))",
           secondary: "rgba(var(--secondary))",
           tertiary: "rgba(var(--tertiary))",
+          tertiary2: "rgba(var(--tertiary2))",
         },
       },
     },

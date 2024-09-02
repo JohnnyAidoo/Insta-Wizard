@@ -1,120 +1,138 @@
 "use client";
 import axios from "axios";
-import { useRouter } from "next/navigation";
-import { UploadButton } from "../utils/uploadthing";
-import { useState } from "react";
-import { Card, CardBody, Spinner, Typography } from "@material-tailwind/react";
-import MainURL from "@/app/components/url";
-import { useAuth } from "@clerk/nextjs";
+import { useEffect, useState } from "react";
+import MainURL from "../components/url";
+import {
+  Alert,
+  Button,
+  Input,
+  Textarea,
+  Typography,
+} from "@material-tailwind/react";
+import { redirect } from "next/navigation";
 
-function AppPage() {
-  const auth = useAuth();
-  //use states
-  const [analyzingDocuments, setAnalyzingDocument] = useState<boolean>(false);
-  //constants
-  const router = useRouter();
+function App() {
+  // const [image, setImage] = useState(null);
+  const [igCredentials, setIgCredentials] = useState({
+    username: "",
+    password: "",
+  });
+  const [imageUrlValue, setImageUrlValue] = useState("");
+  const [captionValue, setCaptionValue] = useState("");
+  const [alert, setAlert] = useState({ message: "", color: "" });
+  const [open, setOpen] = useState(false);
+  const [loading, setloading] = useState(false);
 
-  const headers = {
-    "x-api-key": "ask_c816c4e5ddd8c05c53830d3f8bad3d7d",
-  };
+  // const getImage = (e: any) => {
+  //   setImage(e.target.files[0]);
+  // };
 
-  //functions
+  useEffect(() => {
+    const IGusername = localStorage.getItem("IGusername");
+    const IGpassword = localStorage.getItem("IGpassword");
+    if (IGusername && IGpassword) {
+      setIgCredentials({ username: IGusername, password: IGpassword });
+    } else {
+      redirect("/app/iglogin");
+    }
+  }, []);
 
-  const upload_pdf_to_api = async (
-    url: string,
-    name: string,
-    key: string,
-    type: string
-  ) => {
-    setAnalyzingDocument(true);
-
-    await axios
-      .get("https://api.askyourpdf.com/v1/api/download_pdf", {
-        headers: headers,
-        params: {
-          url: await url,
-        },
+  const post = () => {
+    setloading(true);
+    axios
+      .post(`${MainURL}/api/uploadToIG`, {
+        IGusername: igCredentials.username,
+        IGpassword: igCredentials.password,
+        imageUrl: imageUrlValue,
+        caption: captionValue,
       })
       .then((response) => {
-        if (response) {
-          console.log(response.data);
-          axios
-            .post(`${MainURL}/api/document`, {
-              clerkId: auth.userId,
-              name: name,
-              key: key,
-              documentId: response.data.docId,
-              Url: url,
-            })
-            .then((response) => {
-              console.log(response);
-              setAnalyzingDocument(false);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-          router.push(`/app/chat/?docId=${response.data.docId}&pdfUrl=${url}`);
-        } else {
-          console.log("Error:", response);
-        }
+        console.log("Instagram post success:", response.data);
+        setOpen(true);
+        setAlert({ message: "Image posted to Instagram", color: "green" });
+        setImageUrlValue("");
+        setCaptionValue("");
+        setloading(false);
       })
       .catch((error) => {
-        console.error(error);
+        console.error("Error posting to Instagram:", error.response.data);
+        setImageUrlValue("");
+        setCaptionValue("");
+        setOpen(true);
+        setAlert({
+          message: "Failed to post image to Instagram",
+          color: "red",
+        });
+        setloading(false);
       });
   };
-
   return (
-    <section className="w-full min-h-screen px-10 py-5 flex items-center justify-center bg-primary2">
-      {analyzingDocuments && (
-        <>
-          <Card
-            className="w-screen h-screen absolute z-50 flex justify-center items-center"
-            placeholder={undefined}
+    <>
+      <Alert
+        // @ts-ignore
+        color={alert.color}
+        open={open}
+        onClose={() => setOpen(false)}
+        className="absolute  w-fit"
+      >
+        {alert.message}
+      </Alert>
+      <section className="w-full h-screen flex justify-center items-center flex-col px-10">
+        {/* post form */}
+        <div className="w-full md:w-1/2 flex items-center gap-3">
+          {/* image url form */}
+          <Input
+            value={imageUrlValue}
+            onChange={(e) => {
+              setImageUrlValue(e.target.value);
+            }}
+            variant="outlined"
+            label="Image URL"
+            placeholder="http://example.jpg"
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
-          >
-            <CardBody
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              <Spinner
-                className="h-20 w-20"
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              />
-            </CardBody>
-            <Typography
-              className="text-center"
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              Analyzing Document
-            </Typography>
-          </Card>
-        </>
-      )}
-      <UploadButton
-        onClientUploadComplete={(res) => {
-          //? Do something with the response
-
-          // setUserFile({
-          //   name: res[0].name,
-          //   key: res[0].key,
-          //   url: res[0].url,
-          // });
-
-          upload_pdf_to_api(res[0].url, res[0].name, res[0].key, res[0].type);
-        }}
-        onUploadError={(error: Error) => {
-          // Do something with the error.
-          alert(`ERROR! ${error.message}`);
-        }}
-        endpoint={"fileUploader"}
-      />
-    </section>
+            crossOrigin={undefined}
+          />
+        </div>
+        <Typography
+          variant="small"
+          className="text-secondary text-sm"
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
+          image must be in .jpg
+        </Typography>
+        {/* caption form */}
+        <div className="w-full md:w-1/2 flex items-center gap-3 mt-3 mb-2">
+          <Textarea
+            size="lg"
+            value={captionValue}
+            onChange={(e) => {
+              setCaptionValue(e.target.value);
+            }}
+            variant="outlined"
+            label="Caption"
+            placeholder="this is a nice photo #photo"
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          />
+        </div>
+        <Button
+          loading={loading}
+          className="from-tertiary to-tertiary2 hover:shadow-lg hover:scale-105"
+          variant="gradient"
+          onClick={post}
+          placeholder={undefined}
+          type="submit"
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
+          Download and Post
+        </Button>
+      </section>
+    </>
   );
 }
 
-export default AppPage;
+export default App;

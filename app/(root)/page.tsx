@@ -10,10 +10,10 @@ function LandingPage() {
     <>
       <Header />
       <Hero />
-      <Features />
+      {/* <Features /> */}
       {/* <Pricing /> */}
-      <FAQ />
-      <Footer />
+      {/* <FAQ /> */}
+      {/* <Footer /> */}
     </>
   );
 }

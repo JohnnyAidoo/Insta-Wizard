@@ -1,54 +1,45 @@
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Typography,
-} from "@material-tailwind/react";
-import Lottie from "lottie-react";
+import { Card, CardBody, Typography } from "@material-tailwind/react";
 
+import Image from "next/image";
 function FeatureComp(props: {
   title?: string;
   description?: string;
   image?: any;
+  colorGradient?: any;
 }) {
   return (
     <Card
-      className="md:w-full mb-10"
+      className={`w-1/2 flex items-center py-5 bg-gradient-to-tr hover:scale-105 ${props.colorGradient}`}
       placeholder={undefined}
       onPointerEnterCapture={undefined}
       onPointerLeaveCapture={undefined}
     >
-      <CardHeader
-        shadow={false}
-        className="w-1/2 "
-        placeholder={undefined}
-        onPointerEnterCapture={undefined}
-        onPointerLeaveCapture={undefined}
-      >
-        {props.image}
-      </CardHeader>
+      <div className=" py-10 flex justify-center items-center">
+        <Image src={props.image} alt="find study partners" objectFit="cover" />
+      </div>
       <CardBody
-        className="px-10"
         placeholder={undefined}
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
       >
         <Typography
-          variant="h6"
-          className="font-bold text-3xl mb-10"
+          className="text-secondary"
+          variant="h5"
           placeholder={undefined}
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
         >
           {props.title}
         </Typography>
-        <Typography
+        {/* <Typography
+          className="text-secondary"
+          variant="paragraph"
           placeholder={undefined}
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
         >
           {props.description}
-        </Typography>
+        </Typography> */}
       </CardBody>
     </Card>
   );

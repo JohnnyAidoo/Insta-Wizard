@@ -3,14 +3,16 @@
 @tailwind utilities;
 
 .light {
-  --primary: 255, 255, 255;
+  --primary: 232, 241, 242;
   --primary2: 225, 225, 225;
   --secondary: 0, 0, 0;
-  --tertiary: 246, 132, 76;
+  --tertiary: 103, 191, 120;
+  --tertiary2: 192, 234, 140;
 }
 .dark {
   --primary: 23, 23, 23;
   --primary2: 33, 33, 33;
   --secondary: 255, 255, 255;
-  --tertiary: 246, 132, 76;
+  --tertiary: 103, 191, 120;
+  --tertiary2: 192, 234, 140;
 }

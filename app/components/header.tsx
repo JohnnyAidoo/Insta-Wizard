@@ -8,7 +8,7 @@ import logoImg from "@/public/icon.png";
 export function Header() {
   const navList = (
     <ul className="mt-2 mb-4  flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
-      <Link href="#features" className="hover:underline text-secondary">
+      {/* <Link href="#features" className="hover:underline text-secondary">
         Features
       </Link>
       <Link href="#pricing" className="hover:underline text-secondary">
@@ -16,12 +16,12 @@ export function Header() {
       </Link>
       <Link href="#faqs" className="hover:underline text-secondary">
         FAQs
-      </Link>
+      </Link> */}
     </ul>
   );
 
   return (
-    <div className="dark max-h-[768px] w-[calc(100%+20px)] bg-primary ">
+    <div className=" max-h-[768px] w-[calc(100%+20px)] bg-primary ">
       <Navbar
         className="sticky top-0 z-10 h-max max-w-full rounded-none py-2 lg:px-8 lg:py-4 bg-primary border-primary"
         placeholder={undefined}
@@ -41,7 +41,7 @@ export function Header() {
               onPointerLeaveCapture={undefined}
               className="text-secondary text-lg"
             >
-              Docu-Chat
+              Insta Wizard
             </Typography>
           </Link>
           <div className="flex items-center gap-4">
@@ -60,7 +60,7 @@ export function Header() {
               </a>
               <a href="/sign-up">
                 <Button
-                  className="from-orange-700 to-yellow-900"
+                  className="from-tertiary to-tertiary2"
                   variant="gradient"
                   placeholder={undefined}
                   onPointerEnterCapture={undefined}
