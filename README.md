@@ -1,29 +1,31 @@
-## Getting Started
+# Instagram Automation Web App - README
 
-First, run the development server:
+## Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Welcome to the Instagram Automation Web App! This application is designed to help you automate various tasks on Instagram, such as scheduling posts, managing interactions, and tracking performance. Whether you're a social media manager, influencer, or business owner, this tool can save you time and enhance your Instagram presence.
 
-### Setting up
+## Features
 
-rename app_name in package.json and package-lock.json to the name of the name
-rename .env to .env.local
-connect mongodb url
-connect clerk apis
-connect uploadthing api
+### 1. Post Scheduling
+- Schedule Instagram posts in advance with options for captions, hashtags, and images.
+- View and manage your posting calendar.
 
-### In the App
+### 2. Automated Interactions
+- Automatically like, comment, and follow/unfollow users based on customizable criteria.
+- Target users by hashtags, locations, or specific accounts.
 
-edit the database models
+### 3. Analytics Dashboard
+- Track the performance of your posts, including likes, comments, and follower growth.
+- Analyze engagement metrics to optimize your strategy.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Account Management
+- Manage multiple Instagram accounts from a single dashboard.
+- Switch between accounts easily and track individual account performance.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### 5. Hashtag Suggestions
+- Get automated hashtag recommendations based on your content.
+- Save and manage your favorite hashtag sets.
+
+### 6. Customizable Settings
+- Adjust automation settings to match your desired level of interaction.
+- Set daily limits to avoid exceeding Instagram’s activity thresholds.
