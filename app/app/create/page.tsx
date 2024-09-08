@@ -18,6 +18,7 @@ function CreateNewAutomation() {
     username: "",
     password: "",
   });
+  const userId = useAuth().userId;
   const [imageUrlValue, setImageUrlValue] = useState("");
   const [captionValue, setCaptionValue] = useState("");
   const [alert, setAlert] = useState({ message: "", color: "" });
@@ -57,7 +58,7 @@ function CreateNewAutomation() {
   const schedulePost = async () => {
     setloading(true);
     axios.post(`${MainURL}/postCron`, {
-      clerkId: await useAuth().userId,
+      clerkId: userId,
       IGusername: igCredentials.username,
       IGpassword: igCredentials.password,
       imageUrl: imageUrlValue,

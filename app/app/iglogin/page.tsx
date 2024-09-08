@@ -18,6 +18,7 @@ export default function IgSignUp() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  const userId = useAuth().userId;
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
@@ -32,7 +33,7 @@ export default function IgSignUp() {
 
     if (loggedInUser) {
       axios.post(`${MainURL}/user`, {
-        clerkId: useAuth().userId,
+        clerkId: userId,
         igUsername: username,
         igPassword: password,
       });
