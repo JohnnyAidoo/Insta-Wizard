@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { redirect } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 
 function App() {
   // const [image, setImage] = useState(null);
@@ -28,10 +29,15 @@ function App() {
   // };
 
   useEffect(() => {
-    const IGusername = localStorage.getItem("IGusername");
-    const IGpassword = localStorage.getItem("IGpassword");
-    if (IGusername && IGpassword) {
-      setIgCredentials({ username: IGusername, password: IGpassword });
+    // const clerkId = useAuth().userId;
+    const igUsername = localStorage.getItem("igUsername");
+    const igPassword = localStorage.getItem("igPassword");
+    axios.get(`${MainURL}/user/${"clerkId"}`).then((response) => {
+      console.log(response);
+    });
+
+    if (igUsername && igPassword) {
+      setIgCredentials({ username: igUsername, password: igPassword });
     } else {
       redirect("/app/iglogin");
     }
@@ -41,8 +47,8 @@ function App() {
     setloading(true);
     axios
       .post(`${MainURL}/api/uploadToIG`, {
-        IGusername: igCredentials.username,
-        IGpassword: igCredentials.password,
+        igUsername: igCredentials.username,
+        igPassword: igCredentials.password,
         imageUrl: imageUrlValue,
         caption: captionValue,
       })

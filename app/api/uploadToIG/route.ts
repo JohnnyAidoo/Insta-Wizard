@@ -4,21 +4,21 @@ import { get } from "request-promise";
 import { IgApiClient } from "instagram-private-api";
 
 export async function POST(request: NextRequest) {
-  const { IGusername, IGpassword, imageUrl, caption } = await request.json();
+  const { igUsername, igPassword, imageUrl, caption } = await request.json();
 
   try {
     // let IGusername = "speeq.up";
     // let IGpassword = "1752004GRACIOUS";
 
     const ig = new IgApiClient();
-    ig.state.generateDevice(IGusername);
+    ig.state.generateDevice(igUsername);
 
     const imageBuffer = await get({
       url: imageUrl, // random picture with 800x800 size
       encoding: null, // this is required, only this way a Buffer is returned
     });
 
-    const loggedInUser = await ig.account.login(IGusername, IGpassword);
+    const loggedInUser = await ig.account.login(igUsername, igPassword);
 
     await ig.publish.photo({
       file: imageBuffer,

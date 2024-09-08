@@ -1,16 +1,19 @@
 import connectToDatabase from "@/lib/database";
-import Conversation from "@/lib/database/models/conversation";
+import PostCron from "@/lib/database/models/postCron";
 import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
   await connectToDatabase();
-  const { clerkId, documentId, sender, message } = await request.json();
+  const { clerkId, igUsername, igPassword, imageUrl, scheduledTime, status } =
+    await request.json();
   try {
-    const post_data = await Conversation.create({
+    const post_data = await PostCron.create({
       clerkId,
-      documentId,
-      sender,
-      message,
+      igUsername,
+      igPassword,
+      imageUrl,
+      scheduledTime,
+      status,
     });
     return Response.json(post_data, { status: 201 });
   } catch (err) {
@@ -24,19 +27,17 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   const clerkId = searchParams.get("clerkId");
-  const documentId = searchParams.get("documentId");
 
+  // find all document with status of pending , relating to a specific user
   try {
-    // Use findOne instead of find to get a single document matching clerkId
-    const doc = await Conversation.find({
+    const docs = await PostCron.find({
       clerkId: clerkId,
-      documentId: documentId,
+      status: "pending",
     });
-
-    if (doc) {
-      return Response.json(doc, { status: 200 });
+    if (docs) {
+      return Response.json(docs, { status: 200 });
     } else {
-      return Response.json({ error: "No conversation on this document" });
+      return Response.json({ error: "No Pending Post" });
     }
   } catch (err: any) {
     return Response.json({ error: err.message }, { status: 500 });
