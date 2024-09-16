@@ -11,6 +11,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import axios from "axios";
+import { headers } from "next/headers";
 import { useState } from "react";
 
 function CreateNewAutomation() {
@@ -25,6 +26,7 @@ function CreateNewAutomation() {
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
   const [loading, setloading] = useState(false);
+  const [scheduleTime, setScheduleTime] = useState<string | Date>(new Date());
 
   const postnow = () => {
     setloading(true);
@@ -55,16 +57,44 @@ function CreateNewAutomation() {
         setloading(false);
       });
   };
+
+  function dateToCron(date: string) {
+    const d = new Date(date);
+    const minute = d.getMinutes();
+    const hour = d.getHours();
+    const dayOfMonth = d.getDate();
+    const month = d.getMonth() + 1; // JS months are 0-based, so add 1
+    return `${minute} ${hour} ${dayOfMonth} ${month} *`;
+  }
+
   const schedulePost = async () => {
     setloading(true);
-    axios.post(`${MainURL}/postCron`, {
-      clerkId: userId,
-      IGusername: igCredentials.username,
-      IGpassword: igCredentials.password,
-      imageUrl: imageUrlValue,
-      caption: captionValue,
-      scheduledTime: Date.now(),
-    });
+    const cronExpression = dateToCron(scheduleTime as string);
+
+    axios
+      .post(
+        "https://api.easycron.com/v1/cron-jobs",
+        { url: "https://www.example.com", cron_expression: "* * * * * *" },
+        { headers: { "X-API-Key": "a5b028271620c0f961e8e984336f77cd" } }
+      )
+      .then((response) => {
+        console.log("Cron job scheduled successfully:", response.data);
+        setOpen(true);
+        setAlert({ message: "Cron job scheduled", color: "green" });
+        setImageUrlValue("");
+        setCaptionValue("");
+        setScheduleTime(new Date());
+        setloading(false);
+      });
+
+    // axios.post(`${MainURL}/postCron`, {
+    //   clerkId: userId,
+    //   IGusername: igCredentials.username,
+    //   IGpassword: igCredentials.password,
+    //   imageUrl: imageUrlValue,
+    //   caption: captionValue,
+    //   scheduledTime: cronExpression,
+    // });
   };
 
   return (
@@ -96,8 +126,8 @@ function CreateNewAutomation() {
         >
           <div className="w-full">
             <Typography
-              variant="h2"
-              className="text-left text-3xl text-secondary py-5"
+              variant="h5"
+              className="text-left text-secondary/70 py-5"
               placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
@@ -131,6 +161,7 @@ function CreateNewAutomation() {
           >
             image must be in .jpg
           </Typography>
+
           {/* caption form */}
           <div className="w-full flex items-center gap-3 mt-3 mb-2">
             <Textarea
@@ -141,18 +172,26 @@ function CreateNewAutomation() {
               }}
               variant="outlined"
               label="Caption"
-              placeholder="this is a nice photo #photo"
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
             />
           </div>
-
+          <Typography
+            variant="h6"
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+            className="text-left text-secondary/70 w-full"
+          >
+            Schedule date
+          </Typography>
           <div className="w-full flex items-center  gap-3 mt-3 mb-2">
             <div className="w-2/3">
               <Input
                 disabled={checked ? true : false}
-                label="date"
+                label="date and time"
                 type="datetime-local"
+                onChange={(e) => setScheduleTime(e.target.value)}
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
                 crossOrigin={undefined}
@@ -173,7 +212,7 @@ function CreateNewAutomation() {
             loading={loading}
             className="from-tertiary to-tertiary2 hover:shadow-lg hover:scale-105 my-5"
             variant="gradient"
-            onClick={postnow}
+            onClick={checked ? postnow : schedulePost}
             placeholder={undefined}
             type="submit"
             onPointerEnterCapture={undefined}

@@ -6,6 +6,7 @@ export async function POST(request: NextRequest) {
   await connectToDatabase();
   const { clerkId, igUsername, igPassword, imageUrl, scheduledTime, status } =
     await request.json();
+  // create a new post cron document in the database
   try {
     const post_data = await PostCron.create({
       clerkId,
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest) {
   try {
     const docs = await PostCron.find({
       clerkId: clerkId,
-      status: "pending",
+      scheduledTime: "1725765755201",
     });
     if (docs) {
       return Response.json(docs, { status: 200 });

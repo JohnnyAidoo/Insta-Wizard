@@ -2,13 +2,20 @@ import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import { get } from "request-promise";
 import { IgApiClient } from "instagram-private-api";
+import MainURL from "@/app/components/url";
 
 export async function POST(request: NextRequest) {
-  const { igUsername, igPassword, imageUrl, caption } = await request.json();
+  const { igUsername, igPassword, imageUrl, caption, clerkId } =
+    await request.json();
 
   try {
     // let IGusername = "speeq.up";
     // let IGpassword = "1752004GRACIOUS";
+    if (clerkId) {
+      axios.get(`${MainURL}/api/postCron?clerkId=${clerkId}`).then((res) => {
+        return NextResponse.json(res);
+      });
+    }
 
     const ig = new IgApiClient();
     ig.state.generateDevice(igUsername);
