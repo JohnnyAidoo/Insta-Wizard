@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import MainURL from "./components/url";
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-poppins",
-});
+import React from "react";
 
 export const metadata: Metadata = {
   title: "Insta Wizard",
@@ -49,7 +43,7 @@ export default function RootLayout({
       <ClerkProvider>
         <html lang="en" className=" light bg-primary ">
           <body
-            className={`${poppins.variable} bg-primary light `}
+            className={` bg-primary light `}
             style={{ overflowX: "hidden" }}
           >
             {children}

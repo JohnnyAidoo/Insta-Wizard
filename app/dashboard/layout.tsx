@@ -10,7 +10,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     <main className="light">
       <header className="flex justify-between px-10 py-3  shadow-secondary/20 bg-white/50 w-full top-0 z-10  ">
         <Link
-          href="/app"
+          href="/dashboard"
           className="mr-4 cursor-pointer py-1.5 font-extrabold text-2sxl flex items-center gap-2 justify-center"
         >
           <Image src={logoImg} alt={"logo"} width={50} height={50} />{" "}

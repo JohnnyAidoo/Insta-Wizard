@@ -12,12 +12,13 @@ import {
 } from "@material-tailwind/react";
 import axios from "axios";
 import { headers } from "next/headers";
+import React from "react";
 import { useState } from "react";
 
 function CreateNewAutomation() {
   const [igCredentials, setIgCredentials] = useState({
-    username: "",
-    password: "",
+    username: "speeq.up",
+    password: "1752004GRACIOUS",
   });
   const userId = useAuth().userId;
   const [imageUrlValue, setImageUrlValue] = useState("");
@@ -28,12 +29,14 @@ function CreateNewAutomation() {
   const [loading, setloading] = useState(false);
   const [scheduleTime, setScheduleTime] = useState<string | Date>(new Date());
 
+  // post now
   const postnow = () => {
     setloading(true);
+    console.log(imageUrlValue);
     axios
       .post(`${MainURL}/api/uploadToIG`, {
-        IGusername: igCredentials.username,
-        IGpassword: igCredentials.password,
+        igUsername: igCredentials.username,
+        igPassword: igCredentials.password,
         imageUrl: imageUrlValue,
         caption: captionValue,
       })
@@ -58,6 +61,7 @@ function CreateNewAutomation() {
       });
   };
 
+  // date to cron expression
   function dateToCron(date: string) {
     const d = new Date(date);
     const minute = d.getMinutes();
@@ -67,16 +71,24 @@ function CreateNewAutomation() {
     return `${minute} ${hour} ${dayOfMonth} ${month} *`;
   }
 
+  //  schedule post function
+
   const schedulePost = async () => {
     setloading(true);
     const cronExpression = dateToCron(scheduleTime as string);
+    console.log(cronExpression);
 
     axios
-      .post(
-        "https://api.easycron.com/v1/cron-jobs",
-        { url: "https://www.example.com", cron_expression: "* * * * * *" },
-        { headers: { "X-API-Key": "a5b028271620c0f961e8e984336f77cd" } }
-      )
+      .post(`${MainURL}/api/easycron`, {
+        url: `https://insta-wizard.vercel.app/api/uploadToIG`,
+        cron_expression: cronExpression as string,
+        http_message_body: `{
+          IGusername: ${igCredentials.username},
+          IGpassword: ${igCredentials.password},
+          imageUrl: ${imageUrlValue},
+          caption: ${captionValue},
+        }`,
+      })
       .then((response) => {
         console.log("Cron job scheduled successfully:", response.data);
         setOpen(true);
@@ -84,6 +96,15 @@ function CreateNewAutomation() {
         setImageUrlValue("");
         setCaptionValue("");
         setScheduleTime(new Date());
+        setloading(false);
+      })
+      .catch((error) => {
+        console.error("Error scheduling cron job:", error.response.data);
+        setOpen(true);
+        setAlert({
+          message: "Failed to schedule cron job",
+          color: "red",
+        });
         setloading(false);
       });
 

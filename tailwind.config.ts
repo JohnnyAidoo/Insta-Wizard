@@ -9,6 +9,9 @@ module.exports = withMT(
       "./app/**/*.{js,ts,jsx,tsx,mdx}",
     ],
     theme: {
+      fontFamily: {
+        sans: ["Open Sans", "sans-serif"],
+      },
       extend: {
         colors: {
           primary: "rgba(var(--primary))",

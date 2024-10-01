@@ -11,11 +11,6 @@ export async function POST(request: NextRequest) {
   try {
     // let IGusername = "speeq.up";
     // let IGpassword = "1752004GRACIOUS";
-    if (clerkId) {
-      axios.get(`${MainURL}/api/postCron?clerkId=${clerkId}`).then((res) => {
-        return NextResponse.json(res);
-      });
-    }
 
     const ig = new IgApiClient();
     ig.state.generateDevice(igUsername);
