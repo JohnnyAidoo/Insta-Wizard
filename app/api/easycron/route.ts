@@ -3,12 +3,18 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const { url, cron_expression, http_message_body, http_method } =
+    const { url, cron_expression, http_message_body, cron_job_name } =
       await request.json();
 
     const response = await axios.post(
       "https://api.easycron.com/v1/cron-jobs",
-      { url, cron_expression, http_message_body, http_method: "POST" },
+      {
+        url,
+        cron_expression,
+        http_message_body,
+        http_method: "POST",
+        cron_job_name,
+      },
       {
         headers: { "X-API-Key": "a5b028271620c0f961e8e984336f77cd" },
       }

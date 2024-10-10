@@ -1,34 +1,36 @@
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
-import { get } from "request-promise";
 import { IgApiClient } from "instagram-private-api";
-import MainURL from "@/app/components/url";
 
 export async function POST(request: NextRequest) {
   const { igUsername, igPassword, imageUrl, caption, clerkId } =
     await request.json();
 
   try {
-    // let IGusername = "speeq.up";
-    // let IGpassword = "1752004GRACIOUS";
-
     const ig = new IgApiClient();
     ig.state.generateDevice(igUsername);
 
-    const imageBuffer = await get({
-      url: imageUrl, // random picture with 800x800 size
-      encoding: null, // this is required, only this way a Buffer is returned
+    // Fetch image as a buffer using axios
+    const imageResponse = await axios.get(imageUrl, {
+      responseType: "arraybuffer", // This ensures the image is returned as a buffer
     });
+    const imageBuffer = Buffer.from(imageResponse.data);
+    console.log(imageResponse);
 
+    await ig.simulate.preLoginFlow();
     const loggedInUser = await ig.account.login(igUsername, igPassword);
-
-    await ig.publish.photo({
-      file: imageBuffer,
-      caption: caption,
-    });
-
-    // Optional: To safely log out or clean up
     // await ig.simulate.postLoginFlow();
+
+    // Ensure the image buffer is valid before posting
+    if (!imageBuffer) {
+      throw new Error("Failed to fetch image or image buffer is invalid.");
+    }
+
+    // Publish the photo to Instagram
+    await ig.publish.photo({
+      file: imageBuffer, // Buffer of the image file
+      caption: caption, // The caption for the image
+    });
 
     return NextResponse.json(
       { message: "Image posted to Instagram" },

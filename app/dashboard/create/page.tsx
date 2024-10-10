@@ -82,11 +82,12 @@ function CreateNewAutomation() {
       .post(`${MainURL}/api/easycron`, {
         url: `https://insta-wizard.vercel.app/api/uploadToIG`,
         cron_expression: cronExpression as string,
+        cron_job_name: "cronJobName",
         http_message_body: `{
-          IGusername: ${igCredentials.username},
-          IGpassword: ${igCredentials.password},
-          imageUrl: ${imageUrlValue},
-          caption: ${captionValue},
+          "igUsername": "${igCredentials.username}",
+          "igPassword": "${igCredentials.password}",
+          "imageUrl": "${imageUrlValue}",
+          "caption":" ${captionValue}",
         }`,
       })
       .then((response) => {
