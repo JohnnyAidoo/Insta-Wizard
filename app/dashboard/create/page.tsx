@@ -6,12 +6,14 @@ import {
   Button,
   Card,
   Checkbox,
+  IconButton,
   Input,
   Textarea,
   Typography,
 } from "@material-tailwind/react";
 import axios from "axios";
 import { useState } from "react";
+import { FaArrowLeft } from "react-icons/fa";
 
 function CreateNewAutomation() {
   const [igCredentials, setIgCredentials] = useState({
@@ -101,7 +103,7 @@ function CreateNewAutomation() {
           status: "pending",
         });
         setOpen(true);
-        setAlert({ message: "Cron job scheduled", color: "green" });
+        setAlert({ message: "Automation Created", color: "green" });
         setImageUrlValue("");
         setCaptionValue("");
         setScheduleTime(new Date());
@@ -112,7 +114,7 @@ function CreateNewAutomation() {
         console.error("Error scheduling cron job:", error.response.data);
         setOpen(true);
         setAlert({
-          message: "Failed to schedule cron job",
+          message: "Failed to create automation",
           color: "red",
         });
         setloading(false);
@@ -130,6 +132,16 @@ function CreateNewAutomation() {
       >
         {alert.message}
       </Alert>
+      <a href="/dashboard">
+        <IconButton
+          className="m-10 mt-5 absolute"
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
+          <FaArrowLeft size={25} />
+        </IconButton>
+      </a>
       <section className="w-full flex flex-col md:px-10 items-center">
         <Typography
           variant="h3"
@@ -240,7 +252,7 @@ function CreateNewAutomation() {
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
           >
-            {checked ? "Post Now" : "Schedule Post"}
+            {checked ? "Post Now" : "Create Automation"}
           </Button>
         </Card>
       </section>

@@ -38,15 +38,19 @@ function App() {
   return (
     <>
       <section id="main" className="w-full h-full ">
-        <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-5 p-10">
-          {automations.map((automation) => (
-            <AutomationCard
-              key={automation.id}
-              captionValue={automation.captionValue}
-              scheduledTime={automation.scheduledTime}
-            />
-          ))}
-        </div>
+        {automations.length === 0 ? (
+          <EmptyDashboard />
+        ) : (
+          <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-5 p-10">
+            {automations.map((automation) => (
+              <AutomationCard
+                key={automation.id}
+                captionValue={automation.captionValue}
+                scheduledTime={automation.scheduledTime}
+              />
+            ))}
+          </div>
+        )}
       </section>
     </>
   );
