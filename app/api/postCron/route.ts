@@ -1,11 +1,18 @@
 import connectToDatabase from "@/lib/database";
 import PostCron from "@/lib/database/models/postCron";
 import { NextRequest } from "next/server";
-
+connectToDatabase();
 export async function POST(request: NextRequest) {
-  await connectToDatabase();
-  const { clerkId, igUsername, igPassword, imageUrl, scheduledTime, status } =
-    await request.json();
+  const {
+    clerkId,
+    igUsername,
+    igPassword,
+    imageUrl,
+    scheduledTime,
+    easycronId,
+    status,
+  } = await request.json();
+
   // create a new post cron document in the database
   try {
     const post_data = await PostCron.create({
@@ -14,6 +21,7 @@ export async function POST(request: NextRequest) {
       igPassword,
       imageUrl,
       scheduledTime,
+      easycronId,
       status,
     });
     return Response.json(post_data, { status: 201 });
@@ -24,17 +32,12 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  await connectToDatabase();
-
   const { searchParams } = new URL(request.url);
   const clerkId = searchParams.get("clerkId");
 
   // find all document with status of pending , relating to a specific user
   try {
-    const docs = await PostCron.find({
-      clerkId: clerkId,
-      scheduledTime: "1725765755201",
-    });
+    const docs = await PostCron.find({});
     if (docs) {
       return Response.json(docs, { status: 200 });
     } else {

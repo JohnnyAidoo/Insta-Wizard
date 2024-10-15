@@ -1,9 +1,8 @@
 import connectToDatabase from "@/lib/database";
 import User from "@/lib/database/models/users";
 import { NextRequest, NextResponse } from "next/server";
-
+connectToDatabase();
 export async function POST(request: NextRequest) {
-  await connectToDatabase();
   const { clerkId, IGUsername, IGPassword } = await request.json();
 
   try {
@@ -19,8 +18,6 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  await connectToDatabase();
-
   const { searchParams } = new URL(request.url);
   const clerkId = searchParams.get("clerkId");
   try {

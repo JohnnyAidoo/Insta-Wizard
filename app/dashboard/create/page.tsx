@@ -11,8 +11,6 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import axios from "axios";
-import { headers } from "next/headers";
-import React from "react";
 import { useState } from "react";
 
 function CreateNewAutomation() {
@@ -72,26 +70,36 @@ function CreateNewAutomation() {
   }
 
   //  schedule post function
-
   const schedulePost = async () => {
     setloading(true);
     const cronExpression = dateToCron(scheduleTime as string);
     console.log(cronExpression);
 
+    //psot to easycron api
     axios
       .post(`${MainURL}/api/easycron`, {
         url: `https://insta-wizard.vercel.app/api/uploadToIG`,
         cron_expression: cronExpression as string,
         cron_job_name: "cronJobName",
-        http_message_body: `{
-          "igUsername": "${igCredentials.username}",
-          "igPassword": "${igCredentials.password}",
-          "imageUrl": "${imageUrlValue}",
-          "caption":" ${captionValue}",
-        }`,
+        http_message_body: `{"igUsername": "${igCredentials.username}","igPassword": "${igCredentials.password}","imageUrl": "${imageUrlValue}","caption":" ${captionValue}"}`,
       })
       .then((response) => {
-        console.log("Cron job scheduled successfully:", response.data);
+        console.log(
+          "Cron job scheduled successfully:",
+          response.data.data.cron_job_id
+        );
+
+        //post to database after job is scheduled successfully
+        axios.post(`${MainURL}/api/postCron`, {
+          clerkId: userId,
+          igUsername: igCredentials.username,
+          igPassword: igCredentials.password,
+          imageUrl: imageUrlValue,
+          captionValue: captionValue,
+          scheduledTime: scheduleTime,
+          easycronId: response.data.data.cron_job_id,
+          status: "pending",
+        });
         setOpen(true);
         setAlert({ message: "Cron job scheduled", color: "green" });
         setImageUrlValue("");
@@ -99,6 +107,7 @@ function CreateNewAutomation() {
         setScheduleTime(new Date());
         setloading(false);
       })
+      // Handle error scheduling cron job
       .catch((error) => {
         console.error("Error scheduling cron job:", error.response.data);
         setOpen(true);
@@ -108,15 +117,6 @@ function CreateNewAutomation() {
         });
         setloading(false);
       });
-
-    // axios.post(`${MainURL}/postCron`, {
-    //   clerkId: userId,
-    //   IGusername: igCredentials.username,
-    //   IGpassword: igCredentials.password,
-    //   imageUrl: imageUrlValue,
-    //   caption: captionValue,
-    //   scheduledTime: cronExpression,
-    // });
   };
 
   return (

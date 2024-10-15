@@ -3,13 +3,15 @@ import { Schema, model, models } from "mongoose";
 const PostCronSchema = new Schema({
   clerkId: { type: String, required: true },
   imageUrl: { type: String, required: true },
-  name: { type: String, required: true },
   igUsername: { type: String, required: true },
   igPassword: { type: String, required: true },
-  scheduledTime: { type: String, required: true, default: Date.now() },
-  status: { type: String, required: true, default: "pending" },
+  easycronId: { type: String, required: true },
+  scheduledTime: { type: String, required: true },
+  status: { type: String, required: true },
 });
 
-const PostCron = models.PostCron || model("PostCrons", PostCronSchema);
+// Check if the model already exists in the 'models' object.
+// If it does, use it. Otherwise, create a new model.
+const PostCron = models.PostCron || model("PostCron", PostCronSchema);
 
 export default PostCron;
