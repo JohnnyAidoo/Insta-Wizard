@@ -8,33 +8,38 @@ import {
   Checkbox,
   IconButton,
   Input,
+  Radio,
   Textarea,
   Typography,
 } from "@material-tailwind/react";
+import { UploadButton } from "../../utils/uploadthing";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 
 function CreateNewAutomation() {
+  const { userId } = useAuth();
   const [igCredentials, setIgCredentials] = useState({
     username: "speeq.up",
     password: "1752004GRACIOUS",
   });
-  const userId = useAuth().userId;
   const [imageUrlValue, setImageUrlValue] = useState("");
+  const [imageName, setImageName] = useState("");
   const [captionValue, setCaptionValue] = useState("");
+  const [cronJobName, setCronJobName] = useState("");
   const [alert, setAlert] = useState({ message: "", color: "" });
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
   const [loading, setloading] = useState(false);
+  const [mediaType, setMediaType] = useState("image");
   const [scheduleTime, setScheduleTime] = useState<string | Date>(new Date());
 
   // post now
   const postnow = () => {
     setloading(true);
-    console.log(imageUrlValue);
+    console.log(mediaType);
     axios
-      .post(`${MainURL}/api/uploadToIG`, {
+      .post(`${MainURL}/api/uploadToIG?mediaType=${mediaType as string}`, {
         igUsername: igCredentials.username,
         igPassword: igCredentials.password,
         imageUrl: imageUrlValue,
@@ -73,16 +78,18 @@ function CreateNewAutomation() {
 
   //  schedule post function
   const schedulePost = async () => {
+    console.log(userId);
+
     setloading(true);
     const cronExpression = dateToCron(scheduleTime as string);
     console.log(cronExpression);
 
-    //psot to easycron api
+    //post to easycron api
     axios
       .post(`${MainURL}/api/easycron`, {
         url: `https://insta-wizard.vercel.app/api/uploadToIG`,
         cron_expression: cronExpression as string,
-        cron_job_name: "cronJobName",
+        cron_job_name: cronJobName,
         http_message_body: `{"igUsername": "${igCredentials.username}","igPassword": "${igCredentials.password}","imageUrl": "${imageUrlValue}","caption":" ${captionValue}"}`,
       })
       .then((response) => {
@@ -94,20 +101,16 @@ function CreateNewAutomation() {
         //post to database after job is scheduled successfully
         axios.post(`${MainURL}/api/postCron`, {
           clerkId: userId,
-          igUsername: igCredentials.username,
-          igPassword: igCredentials.password,
-          imageUrl: imageUrlValue,
-          captionValue: captionValue,
-          scheduledTime: scheduleTime,
+          igUsername: "speeq.up",
+          igPassword: "1752004GRACIOUS",
           easycronId: response.data.data.cron_job_id,
+          imageUrl: imageUrlValue as string,
+          scheduledTime: scheduleTime as string,
           status: "pending",
         });
         setOpen(true);
         setAlert({ message: "Automation Created", color: "green" });
-        setImageUrlValue("");
-        setCaptionValue("");
-        setScheduleTime(new Date());
-        setloading(false);
+        window.location.replace("/dashboard");
       })
       // Handle error scheduling cron job
       .catch((error) => {
@@ -132,16 +135,7 @@ function CreateNewAutomation() {
       >
         {alert.message}
       </Alert>
-      <a href="/dashboard">
-        <IconButton
-          className="m-10 mt-5 absolute"
-          placeholder={undefined}
-          onPointerEnterCapture={undefined}
-          onPointerLeaveCapture={undefined}
-        >
-          <FaArrowLeft size={25} />
-        </IconButton>
-      </a>
+
       <section className="w-full flex flex-col md:px-10 items-center">
         <Typography
           variant="h3"
@@ -159,6 +153,38 @@ function CreateNewAutomation() {
           onPointerLeaveCapture={undefined}
         >
           <div className="w-full">
+            <a href="/dashboard">
+              <IconButton
+                className=""
+                placeholder={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              >
+                <FaArrowLeft size={25} />
+              </IconButton>
+            </a>
+            <div className="flex gap-10 w-full items-center">
+              <Radio
+                name="type"
+                label="Image Post"
+                id="image"
+                defaultChecked
+                onChange={(e) => setMediaType(e.target.id)}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+                crossOrigin={undefined}
+              />
+              <Radio
+                name="type"
+                label="Reel"
+                id="reel"
+                disabled
+                onChange={(e) => setMediaType(e.target.id)}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+                crossOrigin={undefined}
+              />
+            </div>
             <Typography
               variant="h5"
               className="text-left text-secondary/70 py-5"
@@ -169,23 +195,53 @@ function CreateNewAutomation() {
               Set Post Details
             </Typography>
           </div>
-
           {/* post form */}
-          <div className="w-full flex items-center gap-3">
+          {/* Automation / cron job name */}
+          <Input
+            required
+            value={cronJobName}
+            onChange={(e) => {
+              setCronJobName(e.target.value);
+            }}
+            variant="outlined"
+            label="Automation Name"
+            placeholder="Automation 1"
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+            crossOrigin={undefined}
+          />
+          <div className="w-full flex items-center gap-3 mt-5">
             {/* image url form */}
-            <Input
-              value={imageUrlValue}
-              onChange={(e) => {
-                setImageUrlValue(e.target.value);
-              }}
-              variant="outlined"
-              label="Image URL"
-              placeholder="http://example.jpg"
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-              crossOrigin={undefined}
+            <div className="flex">
+              <UploadButton
+                appearance={{
+                  button: {
+                    background: "#67bf78",
+                  },
+                }}
+                endpoint="imageUploader"
+                onClientUploadComplete={(res) => {
+                  // Do something with the response
+                  // console.log("Files: ", res);
+                  setImageUrlValue(res[0].appUrl);
+                  setImageName(res[0].name);
+                  setAlert({ color: "success", message: "Success" });
+                }}
+                onUploadError={(error: Error) => {
+                  // Do something with the error.
+                  setAlert({ message: error.message, color: "danger" });
+                }}
+              />
+            </div>
+            <img
+              src={imageUrlValue}
+              alt={imageName}
+              className={`w-1/2  ${imageUrlValue == "" ? "hidden" : ""} px-2`}
             />
+            <p>{imageName}</p>
           </div>
+
+          {/* schedule date form */}
           <Typography
             variant="small"
             className="text-secondary text-sm"
@@ -195,7 +251,6 @@ function CreateNewAutomation() {
           >
             image must be in .jpg
           </Typography>
-
           {/* caption form */}
           <div className="w-full flex items-center gap-3 mt-3 mb-2">
             <Textarea

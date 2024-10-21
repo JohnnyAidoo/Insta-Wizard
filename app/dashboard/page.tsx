@@ -7,10 +7,12 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import MainURL from "../components/url";
 import AutomationCard from "../components/automationCard";
+import { FaPlus } from "react-icons/fa";
+import { useUser } from "@clerk/nextjs";
 
 function App() {
   type AutomationCardType = {
-    id: number;
+    _id: string | number;
     clerkId: number;
     igUsername: string;
     igPassword: string;
@@ -20,6 +22,7 @@ function App() {
     easycronId: string;
     status: string;
   };
+  const userId = useUser().user?.id;
 
   const [automations, setAutomations] = useState<AutomationCardType[]>([]);
   useEffect(() => {
@@ -30,7 +33,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    axios.get(`${MainURL}/api/postCron`).then((response) => {
+    axios.get(`${MainURL}/api/postCron?clerkId=${userId}`).then((response) => {
       setAutomations(response.data);
     });
   }, []);
@@ -41,15 +44,39 @@ function App() {
         {automations.length === 0 ? (
           <EmptyDashboard />
         ) : (
-          <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-5 p-10">
-            {automations.map((automation) => (
-              <AutomationCard
-                key={automation.id}
-                captionValue={automation.captionValue}
-                scheduledTime={automation.scheduledTime}
-              />
-            ))}
-          </div>
+          <>
+            <nav className="w-full flex justify-between p-5 pb-0">
+              <Typography
+                variant="h3"
+                placeholder={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              >
+                My Automations
+              </Typography>
+              <a href="/dashboard/create">
+                <Button
+                  size="lg"
+                  className="bg-tertiary flex items-center"
+                  placeholder={undefined}
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                >
+                  {<FaPlus />} New Automation
+                </Button>
+              </a>
+            </nav>
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-5 p-10">
+              {automations.map((automation) => (
+                <AutomationCard
+                  key={automation._id}
+                  id={automation._id}
+                  captionValue={automation.captionValue}
+                  scheduledTime={automation.scheduledTime}
+                />
+              ))}
+            </div>
+          </>
         )}
       </section>
     </>
@@ -61,7 +88,6 @@ export default App;
 function EmptyDashboard() {
   return (
     <>
-      \{" "}
       <div className="w-full h-[calc(80vh)] flex flex-col justify-center items-center">
         <Typography
           className="p-5"
@@ -76,12 +102,12 @@ function EmptyDashboard() {
           <a href="/dashboard/create">
             <Button
               size="lg"
-              className="bg-tertiary"
+              className="bg-tertiary flex items-center"
               placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
             >
-              Create New Automation
+              {<FaPlus />} New Automation
             </Button>
           </a>
         </div>

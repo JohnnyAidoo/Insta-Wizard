@@ -1,59 +1,61 @@
-import { Card, Typography } from "@material-tailwind/react";
-import { FaInstagram } from "react-icons/fa";
+import {
+  Card,
+  CardHeader,
+  IconButton,
+  Typography,
+} from "@material-tailwind/react";
+import axios from "axios";
+import { FaInstagram, FaTrash } from "react-icons/fa";
+import MainURL from "./url";
 
 function AutomationCard(props: {
   captionValue: string;
   scheduledTime: number | string;
+  id: string | number;
 }) {
+  const deleteAutomation = (e: any) => {
+    e.preventDefault();
+    axios.delete(`${MainURL}/api/postCron?id=${props.id}`).then((response) => {
+      console.log(response.data);
+      // refresh the automations list
+      window.location.reload();
+    });
+  };
+
   return (
     <>
-      <a href="#">
-        <Card
-          className="p-5 shadow-md rounded-xl hover:shadow-2xl "
+      <Card
+        className="p-5 shadow-md rounded-xl hover:shadow-2xl "
+        placeholder={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
+      >
+        <CardHeader
+          className="self-end"
           placeholder={undefined}
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
         >
-          <div className="flex items-center gap-3">
-            <FaInstagram className="h-16 w-16" />
-            <div>
-              <Typography
-                variant="h6"
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                Title
-              </Typography>
-              <Typography
-                variant="paragraph"
-                className="text-xs"
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                media type : img
-              </Typography>
-              <Typography
-                variant="paragraph"
-                className="text-xs"
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                Caption: {props.captionValue}
-              </Typography>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 py-5">
+          <IconButton
+            onClick={deleteAutomation}
+            className="bg-transparent shadow-none"
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
+            <FaTrash color="red" className="bg-transparent" />
+          </IconButton>
+        </CardHeader>
+        <div className="flex items-center gap-3">
+          <FaInstagram className="h-16 w-16" />
+          <div>
             <Typography
-              variant="paragraph"
-              className="text-xs"
+              variant="h6"
               placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
             >
-              Scheduled Time: {props.scheduledTime}
+              Title
             </Typography>
             <Typography
               variant="paragraph"
@@ -62,11 +64,40 @@ function AutomationCard(props: {
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
             >
-              Status: Pending
+              media type : img
+            </Typography>
+            <Typography
+              variant="paragraph"
+              className="text-xs"
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
+              Caption: {props.captionValue}
             </Typography>
           </div>
-        </Card>
-      </a>
+        </div>
+        <div className="flex items-center gap-3 py-5">
+          <Typography
+            variant="paragraph"
+            className="text-xs"
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
+            Scheduled Time: {props.scheduledTime}
+          </Typography>
+          <Typography
+            variant="paragraph"
+            className="text-xs"
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
+            Status: Pending
+          </Typography>
+        </div>
+      </Card>
     </>
   );
 }
