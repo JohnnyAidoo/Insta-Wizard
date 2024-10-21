@@ -73,9 +73,8 @@ function AutomationCard(props: {
               placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
-              children={undefined}
             >
-              {/* Caption: {props.captionValue} */}
+              {/* Caption: {props.captionValue} */}.
             </Typography>
           </div>
         </div>

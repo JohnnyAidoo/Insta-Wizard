@@ -11,6 +11,13 @@ import { FaPlus } from "react-icons/fa";
 import { useAuth } from "@clerk/nextjs";
 
 function App() {
+  const { isLoaded, userId, sessionId, getToken } = useAuth();
+  if (!isLoaded || !userId) {
+    return null;
+  }
+
+  const [automations, setAutomations] = useState<AutomationCardType[]>([]);
+
   type AutomationCardType = {
     _id: string | number;
     title: string;
@@ -23,12 +30,6 @@ function App() {
     easycronId: string;
     status: string;
   };
-  const { isLoaded, userId, sessionId, getToken } = useAuth();
-  if (!isLoaded || !userId) {
-    return null;
-  }
-
-  const [automations, setAutomations] = useState<AutomationCardType[]>([]);
   useEffect(() => {
     AOS.init({
       easing: "ease-out-quad",
