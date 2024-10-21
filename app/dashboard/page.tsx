@@ -11,12 +11,26 @@ import { FaPlus } from "react-icons/fa";
 import { useAuth } from "@clerk/nextjs";
 
 function App() {
-  const { isLoaded, userId, sessionId, getToken } = useAuth();
+  const { isLoaded, userId, sessionId, getToken } = useAuth(); // Move useAuth here
+  const [automations, setAutomations] = useState<AutomationCardType[]>([]); // Move useState here
+
+  useEffect(() => {
+    if (isLoaded && userId) {
+      AOS.init({
+        easing: "ease-out-quad",
+        duration: 500,
+      });
+      axios
+        .get(`${MainURL}/api/postCron?clerkId=${userId}`)
+        .then((response) => {
+          setAutomations(response.data);
+        });
+    }
+  }, [isLoaded, userId]); // Add isLoaded and userId to dependencies
+
   if (!isLoaded || !userId) {
     return null;
   }
-
-  const [automations, setAutomations] = useState<AutomationCardType[]>([]);
 
   type AutomationCardType = {
     _id: string | number;
@@ -30,20 +44,6 @@ function App() {
     easycronId: string;
     status: string;
   };
-  useEffect(() => {
-    AOS.init({
-      easing: "ease-out-quad",
-      duration: 500,
-    });
-  }, []);
-
-  useEffect(() => {
-    console.log(userId);
-    axios.get(`${MainURL}/api/postCron?clerkId=${userId}`).then((response) => {
-      setAutomations(response.data);
-    });
-    console.log(userId);
-  }, []);
 
   return (
     <>
