@@ -10,6 +10,7 @@ import MainURL from "./url";
 
 function AutomationCard(props: {
   captionValue: string;
+  title?: string;
   scheduledTime: number | string;
   id: string | number;
 }) {
@@ -55,7 +56,7 @@ function AutomationCard(props: {
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
             >
-              Title
+              Id: {props.title}
             </Typography>
             <Typography
               variant="paragraph"
@@ -72,8 +73,9 @@ function AutomationCard(props: {
               placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
+              children={undefined}
             >
-              Caption: {props.captionValue}
+              {/* Caption: {props.captionValue} */}
             </Typography>
           </div>
         </div>

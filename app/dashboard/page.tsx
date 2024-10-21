@@ -8,11 +8,12 @@ import { useEffect, useState } from "react";
 import MainURL from "../components/url";
 import AutomationCard from "../components/automationCard";
 import { FaPlus } from "react-icons/fa";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 
 function App() {
   type AutomationCardType = {
     _id: string | number;
+    title: string;
     clerkId: number;
     igUsername: string;
     igPassword: string;
@@ -22,7 +23,10 @@ function App() {
     easycronId: string;
     status: string;
   };
-  const userId = useUser().user?.id;
+  const { isLoaded, userId, sessionId, getToken } = useAuth();
+  if (!isLoaded || !userId) {
+    return null;
+  }
 
   const [automations, setAutomations] = useState<AutomationCardType[]>([]);
   useEffect(() => {
@@ -33,9 +37,11 @@ function App() {
   }, []);
 
   useEffect(() => {
+    console.log(userId);
     axios.get(`${MainURL}/api/postCron?clerkId=${userId}`).then((response) => {
       setAutomations(response.data);
     });
+    console.log(userId);
   }, []);
 
   return (
@@ -71,6 +77,7 @@ function App() {
                 <AutomationCard
                   key={automation._id}
                   id={automation._id}
+                  title={automation.title}
                   captionValue={automation.captionValue}
                   scheduledTime={automation.scheduledTime}
                 />

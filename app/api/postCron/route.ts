@@ -6,6 +6,7 @@ connectToDatabase();
 export async function POST(request: NextRequest) {
   const {
     clerkId,
+    title,
     igUsername,
     igPassword,
     imageUrl,
@@ -19,6 +20,7 @@ export async function POST(request: NextRequest) {
     const post_data = await PostCron.create({
       clerkId,
       igUsername,
+      title,
       igPassword,
       imageUrl,
       scheduledTime,

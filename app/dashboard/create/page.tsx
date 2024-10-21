@@ -101,6 +101,7 @@ function CreateNewAutomation() {
         //post to database after job is scheduled successfully
         axios.post(`${MainURL}/api/postCron`, {
           clerkId: userId,
+          title: cronJobName as string,
           igUsername: "speeq.up",
           igPassword: "1752004GRACIOUS",
           easycronId: response.data.data.cron_job_id,

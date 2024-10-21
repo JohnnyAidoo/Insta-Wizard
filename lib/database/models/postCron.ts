@@ -3,6 +3,7 @@ import { Schema, model, models } from "mongoose";
 const PostCronSchema = new Schema({
   clerkId: { type: String, required: true },
   imageUrl: { type: String, required: true },
+  title: { type: String, required: true },
   igUsername: { type: String, required: true },
   igPassword: { type: String, required: true },
   easycronId: { type: String, required: true },
