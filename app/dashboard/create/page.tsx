@@ -211,7 +211,7 @@ function CreateNewAutomation() {
             onPointerLeaveCapture={undefined}
             crossOrigin={undefined}
           />
-          <div className="w-full flex items-center gap-3 mt-5">
+          <div className="w-full flex flex-col items-center gap-3 mt-5">
             {/* image url form */}
             <div className="flex">
               <UploadButton
@@ -239,6 +239,7 @@ function CreateNewAutomation() {
               alt={imageName}
               className={`w-1/2  ${imageUrlValue == "" ? "hidden" : ""} px-2`}
             />
+
             <p>{imageName}</p>
           </div>
 
