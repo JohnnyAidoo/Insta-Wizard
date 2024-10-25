@@ -11,6 +11,7 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 // Allowed CORS Origin
+
 const allowedOrigins = [
   "http://localhost:3000",
   "https://insta-wizard-johnnyaidoos-projects.vercel.app/",
