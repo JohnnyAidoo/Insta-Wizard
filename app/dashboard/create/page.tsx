@@ -14,7 +14,7 @@ import {
 } from "@material-tailwind/react";
 import { UploadButton } from "../../utils/uploadthing";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 
 function CreateNewAutomation() {

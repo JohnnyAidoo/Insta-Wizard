@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { IgApiClient } from "instagram-private-api";
 import { promisify } from "util";
 import { readFile } from "fs";
+export const maxDuration = 5;
+
 const readFileAsync = promisify(readFile);
 
 export async function POST(request: NextRequest) {

@@ -3,6 +3,8 @@ import PostCron from "@/lib/database/models/postCron";
 import axios from "axios";
 import { NextRequest } from "next/server";
 connectToDatabase();
+export const maxDuration = 5;
+
 export async function POST(request: NextRequest) {
   const {
     clerkId,

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
+export const maxDuration = 5;
 
 export async function POST(request: NextRequest) {
   try {
