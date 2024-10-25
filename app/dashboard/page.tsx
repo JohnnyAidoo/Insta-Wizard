@@ -14,20 +14,6 @@ function App() {
   const { isLoaded, userId, sessionId, getToken } = useAuth(); // Move useAuth here
   const [automations, setAutomations] = useState<AutomationCardType[]>([]); // Move useState here
 
-  useEffect(() => {
-    if (isLoaded && userId) {
-      AOS.init({
-        easing: "ease-out-quad",
-        duration: 500,
-      });
-      axios
-        .get(`${MainURL}/api/postCron?clerkId=${userId}`)
-        .then((response) => {
-          setAutomations(response.data);
-        });
-    }
-  }, [isLoaded, userId]); // Add isLoaded and userId to dependencies
-
   if (!isLoaded || !userId) {
     return null;
   }
@@ -44,6 +30,13 @@ function App() {
     easycronId: string;
     status: string;
   };
+  AOS.init({
+    easing: "ease-out-quad",
+    duration: 500,
+  });
+  axios.get(`${MainURL}/api/postCron?clerkId=${userId}`).then((response) => {
+    setAutomations(response.data);
+  });
 
   return (
     <>

@@ -4,6 +4,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import React from "react";
+export const maxDuration = 5;
 
 export const metadata: Metadata = {
   title: "Insta Wizard",
