@@ -15,6 +15,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://insta-wizard-johnnyaidoos-projects.vercel.app/",
   "https://insta-wizard.vercel.app/",
+  "https://insta-wizard.onrender.com/",
   // Add other allowed domains
 ];
 
