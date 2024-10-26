@@ -5,7 +5,6 @@ import type { NextRequest } from "next/server";
 const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)",
   "/(api|trpc)(.*)",
-  "/api(.*)",
   "/sign-up(.*)",
   "/",
 ]);
