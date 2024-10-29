@@ -14,14 +14,17 @@ import {
 } from "@material-tailwind/react";
 import { UploadButton } from "../../utils/uploadthing";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 function CreateNewAutomation() {
+  const router = useRouter();
+
   const { userId } = useAuth();
   const [igCredentials, setIgCredentials] = useState({
-    username: "speeq.up",
-    password: "1752004GRACIOUS",
+    username: "",
+    password: "",
   });
   const [imageUrlValue, setImageUrlValue] = useState("");
   const [imageKeyValue, setImageKeylValue] = useState("");
@@ -35,10 +38,23 @@ function CreateNewAutomation() {
   const [mediaType, setMediaType] = useState("image");
   const [scheduleTime, setScheduleTime] = useState<string | Date>(new Date());
 
+  useEffect(() => {
+    const igUsername = localStorage.getItem("igUsername");
+    if (!igUsername) {
+      router.replace("/dashboard/iglogin");
+    }
+  }, []);
+
   // post now
-  const postnow = () => {
+  const postnow = async () => {
     setloading(true);
-    console.log(mediaType);
+    const igPassword = await localStorage.getItem("igPassword");
+    const igUsername = await localStorage.getItem("igUsername");
+    setIgCredentials({
+      username: igUsername as string,
+      password: igPassword as string,
+    });
+    // console.log(mediaType);
     axios
       .post(`${MainURL}/api/uploadToIG?mediaType=${mediaType as string}`, {
         igUsername: igCredentials.username,

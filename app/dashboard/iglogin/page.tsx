@@ -22,24 +22,19 @@ export default function IgSignUp() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    const loggedInUser = true;
-    if (!loggedInUser) {
-      setAlert({
-        message: "Login failed, Incorrect username or password",
-        color: "red",
-      });
-      return;
-    }
-
-    if (loggedInUser) {
-      axios.post(`${MainURL}/user`, {
+    axios
+      .post(`${MainURL}/api/user`, {
         clerkId: userId,
         igUsername: username,
         igPassword: password,
+      })
+      .then((response) => {
+        console.log(response.data);
       });
-    }
+
     // Redirect to app
-    window.location.href = "/app";
+    localStorage.setItem("igUsername", "true");
+    window.location.href = "/dashboard";
   };
 
   return (

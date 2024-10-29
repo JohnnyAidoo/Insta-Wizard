@@ -3,15 +3,25 @@ import User from "@/lib/database/models/users";
 import { NextRequest, NextResponse } from "next/server";
 connectToDatabase();
 export async function POST(request: NextRequest) {
-  const { clerkId, IGUsername, IGPassword } = await request.json();
+  const { clerkId, igUsername, igPassword } = await request.json();
 
   try {
-    const user = await User.create({
-      clerkId,
-      IGUsername,
-      IGPassword,
-    });
-    return NextResponse.json(user, { status: 201 });
+    if (!clerkId || !igUsername || !igPassword) {
+      const user = await User.create({
+        clerkId,
+        igUsername,
+        igPassword,
+      });
+    } else {
+      const user = await User.findOneAndUpdate(
+        { clerkId },
+        { $set: { igUsername, igPassword } }
+      );
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+    }
+    return NextResponse.json("user created or updated", { status: 201 });
   } catch (err) {
     return NextResponse.json(err, { status: 404 });
   }

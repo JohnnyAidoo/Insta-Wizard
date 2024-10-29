@@ -9,8 +9,10 @@ import MainURL from "../components/url";
 import AutomationCard from "../components/automationCard";
 import { FaPlus } from "react-icons/fa";
 import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 function App() {
+  const router = useRouter();
   const { isLoaded, userId, sessionId, getToken } = useAuth(); // Move useAuth here
   const [automations, setAutomations] = useState<AutomationCardType[]>([]); // Move useState here
   useEffect(() => {
@@ -21,6 +23,21 @@ function App() {
   if (!isLoaded || !userId) {
     return null;
   }
+  useEffect(() => {
+    const igUsername = localStorage.getItem("igUsername");
+    if (!igUsername) {
+      axios
+        .get(`${MainURL}/api/user/?clerkId=${userId}`)
+        .then((response) => {
+          console.log(response);
+          localStorage.setItem("igUsername", response.data.igUsername);
+          localStorage.setItem("igPassword", response.data.igPassword);
+        })
+        .catch((err) => {
+          router.replace("/dashboard/iglogin");
+        });
+    }
+  });
 
   type AutomationCardType = {
     _id: string | number;
