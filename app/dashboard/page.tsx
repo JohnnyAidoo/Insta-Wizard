@@ -11,19 +11,35 @@ import { FaPlus } from "react-icons/fa";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
+type AutomationCardType = {
+  _id: string | number;
+  title: string;
+  clerkId: number;
+  igUsername: string;
+  igPassword: string;
+  imageUrl: string;
+  captionValue: string;
+  scheduledTime: string;
+  easycronId: string;
+  status: string;
+};
+
 function App() {
   const router = useRouter();
-  const { isLoaded, userId, sessionId, getToken } = useAuth(); // Move useAuth here
-  const [automations, setAutomations] = useState<AutomationCardType[]>([]); // Move useState here
+  const { isLoaded, userId, sessionId, getToken } = useAuth();
+  const [automations, setAutomations] = useState<AutomationCardType[]>([]);
+
   useEffect(() => {
+    if (!isLoaded || !userId) return;
+
     axios.get(`${MainURL}/api/postCron?clerkId=${userId}`).then((response) => {
       setAutomations(response.data);
     });
-  }, []);
-  if (!isLoaded || !userId) {
-    return null;
-  }
+  }, [isLoaded, userId]);
+
   useEffect(() => {
+    if (!isLoaded || !userId) return;
+
     const igUsername = localStorage.getItem("igUsername");
     if (!igUsername) {
       axios
@@ -37,24 +53,18 @@ function App() {
           router.replace("/dashboard/iglogin");
         });
     }
-  });
+  }, [isLoaded, userId, router]);
 
-  type AutomationCardType = {
-    _id: string | number;
-    title: string;
-    clerkId: number;
-    igUsername: string;
-    igPassword: string;
-    imageUrl: string;
-    captionValue: string;
-    scheduledTime: string;
-    easycronId: string;
-    status: string;
-  };
-  AOS.init({
-    easing: "ease-out-quad",
-    duration: 500,
-  });
+  useEffect(() => {
+    AOS.init({
+      easing: "ease-out-quad",
+      duration: 500,
+    });
+  }, []);
+
+  if (!isLoaded || !userId) {
+    return null;
+  }
 
   return (
     <>
