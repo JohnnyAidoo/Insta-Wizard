@@ -9,7 +9,6 @@ import MainURL from "../components/url";
 import AutomationCard from "../components/automationCard";
 import { FaPlus } from "react-icons/fa";
 import { useAuth } from "@clerk/nextjs";
-export const maxDuration = 5;
 
 function App() {
   const { isLoaded, userId, sessionId, getToken } = useAuth(); // Move useAuth here

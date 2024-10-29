@@ -2,9 +2,11 @@ import connectToDatabase from "@/lib/database";
 import PostCron from "@/lib/database/models/postCron";
 import axios from "axios";
 import { NextRequest } from "next/server";
+import { UTApi } from "uploadthing/server";
 
 // Initialize database connection once
 let isConnected = false;
+const utapi = new UTApi();
 
 async function ensureConnection() {
   if (!isConnected) {
@@ -38,6 +40,7 @@ export async function POST(request: NextRequest) {
       igUsername,
       igPassword,
       imageUrl,
+      imageKey,
       scheduledTime,
       easycronId,
       status,
@@ -49,6 +52,7 @@ export async function POST(request: NextRequest) {
       igUsername,
       igPassword,
       imageUrl,
+      imageKey,
       scheduledTime,
       easycronId,
       status,
@@ -102,10 +106,13 @@ export async function DELETE(req: NextRequest) {
     }
 
     const item = await PostCron.findById(id);
-
     if (!item) {
       return Response.json({ error: "Item not found" }, { status: 404 });
     }
+
+    // Get the image URL from the item
+    const imageKey = item.imageKey;
+    console.log("Image URL Key:", imageKey);
 
     // Use Promise.all to run operations in parallel
     await Promise.all([
@@ -114,12 +121,16 @@ export async function DELETE(req: NextRequest) {
         headers: { "X-API-Key": "a5b028271620c0f961e8e984336f77cd" },
         timeout: 5000, // 5 second timeout for external API
       }),
+
+      // Delete from uploadthing
+      imageKey ? utapi.deleteFiles(imageKey) : Promise.resolve(), // Only delete if imageKey is present
+
       // Delete from database
       PostCron.findByIdAndDelete(id),
     ]);
 
     return Response.json(
-      { message: "Item deleted successfully" },
+      { message: `Item deleted successfully` },
       { status: 200 }
     );
   } catch (error: any) {

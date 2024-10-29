@@ -24,6 +24,7 @@ function CreateNewAutomation() {
     password: "1752004GRACIOUS",
   });
   const [imageUrlValue, setImageUrlValue] = useState("");
+  const [imageKeyValue, setImageKeylValue] = useState("");
   const [imageName, setImageName] = useState("");
   const [captionValue, setCaptionValue] = useState("");
   const [cronJobName, setCronJobName] = useState("");
@@ -43,6 +44,7 @@ function CreateNewAutomation() {
         igUsername: igCredentials.username,
         igPassword: igCredentials.password,
         imageUrl: imageUrlValue,
+        imageKey: imageKeyValue,
         caption: captionValue,
       })
       .then((response) => {
@@ -90,7 +92,7 @@ function CreateNewAutomation() {
         url: `https://insta-wizard.vercel.app/api/uploadToIG`,
         cron_expression: cronExpression as string,
         cron_job_name: cronJobName,
-        http_message_body: `{"igUsername": "${igCredentials.username}","igPassword": "${igCredentials.password}","imageUrl": "${imageUrlValue}","caption":" ${captionValue}"}`,
+        http_message_body: `{"igUsername": "${igCredentials.username}","igPassword": "${igCredentials.password}","imageUrl": "${imageUrlValue}","imageKey:"${imageKeyValue}"","caption":" ${captionValue}"}`,
       })
       .then((response) => {
         console.log(
@@ -106,6 +108,7 @@ function CreateNewAutomation() {
           igPassword: "1752004GRACIOUS",
           easycronId: response.data.data.cron_job_id,
           imageUrl: imageUrlValue as string,
+          imageKey: imageKeyValue as string,
           scheduledTime: scheduleTime as string,
           status: "pending",
         });
@@ -223,8 +226,9 @@ function CreateNewAutomation() {
                 endpoint="imageUploader"
                 onClientUploadComplete={(res) => {
                   // Do something with the response
-                  // console.log("Files: ", res);
+                  console.log("Files: ", res);
                   setImageUrlValue(res[0].appUrl);
+                  setImageKeylValue(res[0].key);
                   setImageName(res[0].name);
                   setAlert({ color: "success", message: "Success" });
                 }}
