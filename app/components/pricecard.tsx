@@ -1,5 +1,5 @@
 "use client";
-import { useUser } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import {
   Card,
@@ -9,32 +9,29 @@ import {
   Typography,
   Button,
 } from "@material-tailwind/react";
-
-function CheckIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={2}
-      stroke="currentColor"
-      className="h-3 w-3"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M4.5 12.75l6 6 9-13.5"
-      />
-    </svg>
-  );
-}
+import axios from "axios";
 
 export function PricingCard(props: {
-  planLink: string;
   planPrice: number | string;
   planDuration: string;
+  priceId: string;
 }) {
-  const { user } = useUser();
+  const userId = useAuth().userId;
+  const user = useUser();
+  const handleSubscribe = async () => {
+    const email = await user.user?.emailAddresses[0].emailAddress;
+
+    axios
+      .post("/api/create-checkout-session", {
+        email: email,
+        userId: userId,
+        priceId: props.priceId,
+      })
+      .then((response) => {
+        let url = response.data.url;
+        window.location.href = url;
+      });
+  };
   return (
     <Card
       color="gray"
@@ -156,24 +153,39 @@ export function PricingCard(props: {
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
       >
-        <a
-          href={props.planLink + "?prefilled_email=" + user?.emailAddresses}
-          target="_"
+        <Button
+          size="lg"
+          color="white"
+          className="hover:scale-[1.02] focus:scale-[1.02] active:scale-100"
+          ripple={false}
+          fullWidth={true}
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+          onClick={handleSubscribe}
         >
-          <Button
-            size="lg"
-            color="white"
-            className="hover:scale-[1.02] focus:scale-[1.02] active:scale-100"
-            ripple={false}
-            fullWidth={true}
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            Buy Now
-          </Button>
-        </a>
+          Buy Now
+        </Button>
       </CardFooter>
     </Card>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+      stroke="currentColor"
+      className="h-3 w-3"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M4.5 12.75l6 6 9-13.5"
+      />
+    </svg>
   );
 }

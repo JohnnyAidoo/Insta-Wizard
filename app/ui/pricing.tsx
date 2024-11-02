@@ -6,20 +6,18 @@ function Pricing() {
   // Stripe Plans >> fill in your own priceId & link
   const plans = [
     {
-      link:
-        process.env.NODE_ENV === "development"
-          ? "https://buy.stripe.com/test_28o2argVX8NNeqs144"
-          : "",
       priceId:
         process.env.NODE_ENV === "development"
-          ? "price_1PRReuLoyfPvUnOQ7cDj1YaH"
+          ? "price_1QGCw7LpRK8595KUU9V53Ssb"
           : "",
       price: 19,
       duration: "/month",
     },
     {
-      link: process.env.NODE_ENV === "development" ? "********" : "",
-      priceId: process.env.NODE_ENV === "development" ? "********" : "",
+      priceId:
+        process.env.NODE_ENV === "development"
+          ? "price_1QGCw7LpRK8595KUU9V53Ssb"
+          : "",
 
       price: 99,
       duration: "/year",
@@ -40,10 +38,10 @@ function Pricing() {
       <div className=" h-fit w-full flex flex-wrap py-10 gap-10 justify-center">
         {plans.map((plan) => (
           <PricingCard
-            key={plan.link}
-            planLink={plan.link}
+            key={plan.priceId}
             planPrice={plan.price}
             planDuration={plan.duration}
+            priceId={plan.priceId}
           />
         ))}
       </div>

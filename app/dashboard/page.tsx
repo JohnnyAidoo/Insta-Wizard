@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import MainURL from "../components/url";
 import AutomationCard from "../components/automationCard";
 import { FaPlus } from "react-icons/fa";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 type AutomationCardType = {
@@ -28,6 +28,27 @@ function App() {
   const router = useRouter();
   const { isLoaded, userId, sessionId, getToken } = useAuth();
   const [automations, setAutomations] = useState<AutomationCardType[]>([]);
+  const user = useUser();
+
+  const postUserToDB = async () => {
+    axios
+      .post(`${MainURL}/api/user`, {
+        clerkId: userId,
+        email: await user.user?.emailAddresses,
+        igUsername: localStorage.getItem("igUsername"),
+        igPassword: localStorage.getItem("igPassword"),
+      })
+      .then((response) => {
+        console.log("success");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    postUserToDB();
+  }, []);
 
   useEffect(() => {
     if (!isLoaded || !userId) return;

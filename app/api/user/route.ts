@@ -7,21 +7,25 @@ export async function POST(request: NextRequest) {
 
   try {
     if (!clerkId || !igUsername || !igPassword) {
-      const user = await User.create({
-        clerkId,
-        igUsername,
-        igPassword,
-      });
-    } else {
+      return NextResponse.json(
+        { error: "clerkId, igUsername, and igPassword are required" },
+        { status: 400 }
+      );
+    }
+
+    const existingUser = await User.findOne({ clerkId });
+
+    if (existingUser) {
       const user = await User.findOneAndUpdate(
         { clerkId },
         { $set: { igUsername, igPassword } }
       );
-      if (!user) {
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
-      }
+      return NextResponse.json("user updated", { status: 201 });
+    } else {
+      const user = await User.create({ clerkId, igUsername, igPassword });
     }
-    return NextResponse.json("user created or updated", { status: 201 });
+
+    return NextResponse.json("user created ", { status: 201 });
   } catch (err) {
     return NextResponse.json(err, { status: 404 });
   }
