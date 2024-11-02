@@ -40,9 +40,14 @@ function CreateNewAutomation() {
 
   useEffect(() => {
     const igUsername = localStorage.getItem("igUsername");
+    const igPassword = localStorage.getItem("igPassword");
     if (!igUsername) {
       router.replace("/dashboard/iglogin");
     }
+    setIgCredentials({
+      username: igUsername as string,
+      password: igPassword as string,
+    });
   }, []);
 
   // post now
@@ -96,8 +101,6 @@ function CreateNewAutomation() {
 
   //  schedule post function
   const schedulePost = async () => {
-    console.log(userId);
-
     setloading(true);
     const cronExpression = dateToCron(scheduleTime as string);
     console.log(cronExpression);
@@ -105,10 +108,10 @@ function CreateNewAutomation() {
     //post to easycron api
     axios
       .post(`${MainURL}/api/easycron`, {
-        url: `https://insta-wizard.vercel.app/api/uploadToIG`,
+        url: `https://insta-wizard.vercel.app/api/uploadToIG?mediaType=image`,
         cron_expression: cronExpression as string,
         cron_job_name: cronJobName,
-        http_message_body: `{"igUsername": "${igCredentials.username}","igPassword": "${igCredentials.password}","imageUrl": "${imageUrlValue}","imageKey:"${imageKeyValue}"","caption":" ${captionValue}"}`,
+        http_message_body: `{"igUsername":"${igCredentials.username}","igPassword": "${igCredentials.password}","imageUrl": "${imageUrlValue}","imageKey":"${imageKeyValue}","caption":" ${captionValue}"}`,
       })
       .then((response) => {
         console.log(
@@ -120,8 +123,8 @@ function CreateNewAutomation() {
         axios.post(`${MainURL}/api/postCron`, {
           clerkId: userId,
           title: cronJobName as string,
-          igUsername: "speeq.up",
-          igPassword: "1752004GRACIOUS",
+          igUsername: igCredentials.username,
+          igPassword: igCredentials.password,
           easycronId: response.data.data.cron_job_id,
           imageUrl: imageUrlValue as string,
           imageKey: imageKeyValue as string,

@@ -1,86 +1,109 @@
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import { IgApiClient } from "instagram-private-api";
-import { promisify } from "util";
-import { readFile } from "fs";
-export const maxDuration = 5;
+import { readFile } from "fs/promises"; // Using promises version directly
+import { join } from "path";
 
-const readFileAsync = promisify(readFile);
+// Configuration constants
+const CONFIG = {
+  AXIOS_TIMEOUT: 3000,
+  MIN_FILE_SIZE: 1024,
+  CACHE_MAX_AGE: 30 * 60 * 1000, // 30 minutes
+} as const;
 
+// Create a single axios instance with optimized settings
+const axiosInstance = axios.create({
+  timeout: CONFIG.AXIOS_TIMEOUT,
+  responseType: "arraybuffer",
+  maxContentLength: 10 * 1024 * 1024, // 10MB max
+  headers: { "Accept-Encoding": "gzip,deflate" },
+});
+
+// Improved cache implementation with TTL
+class InstagramClientCache {
+  private cache = new Map<string, { client: IgApiClient; timestamp: number }>();
+
+  async get(username: string, password: string): Promise<IgApiClient> {
+    const cacheKey = `${username}-${password}`;
+    const cached = this.cache.get(cacheKey);
+
+    if (cached && Date.now() - cached.timestamp < CONFIG.CACHE_MAX_AGE) {
+      return cached.client;
+    }
+
+    const ig = new IgApiClient();
+    ig.state.generateDevice(username);
+    await Promise.all([
+      ig.simulate.preLoginFlow(),
+      ig.account.login(username, password),
+    ]);
+
+    this.cache.set(cacheKey, { client: ig, timestamp: Date.now() });
+    return ig;
+  }
+}
+
+const igClientCache = new InstagramClientCache();
+
+// Optimized file reading with validation
+async function readMediaFile(filePath: string): Promise<Buffer> {
+  try {
+    const resolvedPath = join(process.cwd(), filePath);
+    const buffer = await readFile(resolvedPath);
+
+    if (buffer.length < CONFIG.MIN_FILE_SIZE) {
+      throw new Error(`File too small: ${filePath}`);
+    }
+
+    return buffer;
+  } catch (error) {
+    throw new Error(`Media file error: ${(error as Error).message}`);
+  }
+}
+
+// Main handler with optimized error handling
 export async function POST(request: NextRequest) {
-  const { igUsername, igPassword, imageUrl, caption, clerkId } =
-    await request.json();
+  try {
+    const { igUsername, igPassword, imageUrl, caption } = await request.json();
+    const mediaType = new URL(request.url).searchParams.get("mediaType");
 
-  const { searchParams } = new URL(request.url);
-  const mediaType = searchParams.get("mediaType");
+    // Get Instagram client
+    const ig = await igClientCache.get(igUsername, igPassword);
 
-  if (mediaType == "reel") {
-    try {
-      const ig = new IgApiClient();
-      ig.state.generateDevice(igUsername);
+    if (mediaType === "reel") {
+      // Parallel file reading
+      const [video, cover] = await Promise.all([
+        readMediaFile("./public/uploads/myVideo.mp4"),
+        readMediaFile("./public/uploads/myVideoCover.jpg"),
+      ]);
 
-      await ig.simulate.preLoginFlow();
-      const loggedInUser = await ig.account.login(igUsername, igPassword);
-
-      const videoPath = "./myVideo.mp4";
-      const coverPath = "./myVideoCover.jpg";
-
-      // Publish the photo to Instagram
       const publishResult = await ig.publish.video({
-        // read the file into a Buffer
-        video: await readFileAsync(videoPath),
-        coverImage: await readFileAsync(coverPath),
-        caption: caption,
+        video,
+        coverImage: cover,
+        caption,
       });
 
-      return NextResponse.json(
-        { message: "Video posted to Instagram" },
-        { status: 200 }
-      );
-    } catch (err: any) {
-      console.error("Error posting to Instagram:", err);
-      return NextResponse.json(
-        { message: "Failed to post video", error: err.message },
-        { status: 500 }
-      );
+      return NextResponse.json({
+        message: "Video posted",
+        mediaId: publishResult.media.id,
+      });
+    } else {
+      const imageBuffer = await axiosInstance
+        .get(imageUrl)
+        .then((response) => Buffer.from(response.data));
+
+      if (!imageBuffer.length) throw new Error("Invalid image");
+
+      await ig.publish.photo({ file: imageBuffer, caption });
+      return NextResponse.json({ message: "Image posted" });
     }
-  } else {
-    try {
-      const ig = new IgApiClient();
-      ig.state.generateDevice(igUsername);
-
-      // Fetch image as a buffer using axios
-      const imageResponse = await axios.get(imageUrl, {
-        responseType: "arraybuffer", // This ensures the image is returned as a buffer
-      });
-      const imageBuffer = Buffer.from(imageResponse.data);
-      console.log(imageResponse);
-
-      await ig.simulate.preLoginFlow();
-      const loggedInUser = await ig.account.login(igUsername, igPassword);
-      // await ig.simulate.postLoginFlow();
-
-      // Ensure the image buffer is valid before posting
-      if (!imageBuffer) {
-        throw new Error("Failed to fetch image or image buffer is invalid.");
-      }
-
-      // Publish the photo to Instagram
-      await ig.publish.photo({
-        file: imageBuffer, // Buffer of the image file
-        caption: caption, // The caption for the image
-      });
-
-      return NextResponse.json(
-        { message: "Image posted to Instagram" },
-        { status: 200 }
-      );
-    } catch (err: any) {
-      console.error("Error posting to Instagram:", err);
-      return NextResponse.json(
-        { message: "Failed to post image", error: err.message },
-        { status: 500 }
-      );
-    }
+  } catch (error) {
+    console.error("Instagram post error:", error);
+    return NextResponse.json(
+      {
+        error: (error as Error).message || "Unknown error",
+      },
+      { status: 500 }
+    );
   }
 }
