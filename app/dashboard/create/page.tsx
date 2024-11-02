@@ -111,7 +111,7 @@ function CreateNewAutomation() {
         url: `https://insta-wizard.vercel.app/api/uploadToIG?mediaType=image`,
         cron_expression: cronExpression as string,
         cron_job_name: cronJobName,
-        http_message_body: `{"igUsername":"${igCredentials.username}","igPassword": "${igCredentials.password}","imageUrl": "${imageUrlValue}","imageKey":"${imageKeyValue}","caption":" ${captionValue}"}`,
+        http_message_body: `{"igUsername":"${igCredentials.username}","igPassword": "${igCredentials.password}","imageUrl": "${imageUrlValue}","imageKey":"${imageKeyValue}","caption":"${captionValue}"}`,
       })
       .then((response) => {
         console.log(
