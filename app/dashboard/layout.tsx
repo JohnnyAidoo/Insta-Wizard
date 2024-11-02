@@ -13,7 +13,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           href="/dashboard"
           className="mr-4 cursor-pointer py-1.5 font-extrabold text-2sxl flex items-center gap-2 justify-center"
         >
-          <Image src={logoImg} alt={"logo"} width={50} height={50} />{" "}
+          <Image src={logoImg} alt={"logo"} width={50} height={50} />
           <Typography
             variant="h1"
             placeholder={undefined}
@@ -24,6 +24,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             Insta Wizard
           </Typography>
         </Link>
+
         <UserButton />
       </header>
       <section className="flex">{children}</section>
